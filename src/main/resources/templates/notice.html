@@ -1,0 +1,58 @@
+<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+     <h1>공지사항</h1>
+    <button class="btn-write" th:onclick="|window.location.href='@{/notice/create}'|">글쓰기</button>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>조회수</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+      	<tr th:each="notice, loop  : ${paging}">
+          <td th:text="${paging.totalElements -(paging.number * paging.size) -(loop.index)}"></td>
+          <td><a th:href="@{|/notice/contentView/${notice.id}|}"  th:text="${notice.btitle}"></a>
+          <span	th:if="${#lists.size(notice.commentList)} > 0"
+				th:text="|[${#lists.size(notice.commentList)}]|"></span></td>
+          <td th:text="${notice.author.membername}"></td>
+          <td th:text="${notice.bhit}"></td>
+          <td th:text="${#temporals.format(notice.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- 페이징 버튼 -->
+    <!-- 페이징 버튼 -->
+<div th:if="${!paging.isEmpty()}">
+    <div class="pagination">
+        <!-- 처음 버튼 -->
+        <button th:class="${paging.first} ? 'disabled' : ''"
+                th:onclick="'location.href=\'/notice?page=0\';'">처음</button>
+
+        <!-- 이전 버튼 -->
+        <button th:class="${!paging.hasPrevious} ? 'disabled' : ''"
+                th:onclick="'location.href=\'/notice?page=' + (${paging.number} - 1) + '\';'">◀</button>
+
+        <!-- 페이지 숫자 버튼들 -->
+        <button th:each="i : ${#numbers.sequence(0, paging.totalPages-1)}"
+                th:class="${i == paging.number} ? 'active' : ''"
+                th:onclick="'location.href=\'/notice?page=' + ${i} + '\';'"
+                th:text="${i + 1}">
+        </button>
+
+        <!-- 다음 버튼 -->
+        <button th:class="${!paging.hasNext} ? 'disabled' : ''"
+                th:onclick="'location.href=\'/notice?page=' + (${paging.number} + 1) + '\';'">▶</button>
+
+        <!-- 마지막 버튼 -->
+        <button th:class="${paging.last} ? 'disabled' : ''"
+                th:onclick="'location.href=\'/notice?page=' + (${paging.totalPages} - 1) + '\';'">마지막</button>
+    </div>
+</div>
+</div>
+</html>

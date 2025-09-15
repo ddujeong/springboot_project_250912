@@ -1,0 +1,46 @@
+<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+		<h1 th:text="${notice.btitle}"></h1>
+  <div class="detail-info">
+    <span th:if="${notice.author!=null}" th:text="|작성자 : ${notice.author.membername}|">작성자</span>
+     <span th:text="|조회수 : ${notice.bhit}|"></span>
+    <span th:text="|작성일 : ${#temporals.format(notice.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}|">작성일
+     </span>
+  </div>
+  <div class="detail-content" th:text="${notice.bcontent}"></div>
+  
+  <!-- 댓글 목록 -->
+  <div class="comments-list" th:each="comment : ${notice.commentList}">
+      <div class="comment-item">
+        <div class="comment-info">
+          <span class="comment-author" th:text="${comment.author.membername}"></span>
+          <span class="comment-date" th:text="${#temporals.format(comment.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}">
+          </span>
+        </div>
+        
+            <form th:action="@{|/comment/modify/${id}|}" method="post" th:if="${comment.id == id}">
+              <textarea name="ctext" rows="4" cols="50"  th:text="${comment.ctext}"></textarea>
+              <div class="comment-actions">
+                <button type="submit" class="btn-edit">수정</button>
+                <button type="button" class="btn-delete" onclick="window.history.go(-1);">취소</button>
+              </div>
+            </form>
+            <p class="comment-content" th:if="${comment.id != id}" th:text="${comment.ctext}"></p>
+      	</div>
+      </div>
+  </div>
+<script layout:fragment="script" type="text/javascript">
+const delete_elements = document.getElementsByClassName("delete");
+Array.from(delete_elements).forEach(function(element) {
+	element.addEventListener('click',function(){
+		if(confirm("정말로 삭제하시겠습니까?")) {
+			location.href = this.dataset.uri;
+		};
+	});
+});
+</script>
+</html>

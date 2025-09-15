@@ -1,0 +1,13 @@
+<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+	<h1>회원가입</h1>
+    	<form th:action="@{/member/join}" th:object="${memberCreateForm}" method="post">
+      		<input type="text" th:field="*{memberid}" placeholder="아이디" required />
+      		<input type="password" th:field="*{memberpw}" placeholder="비밀번호" required />
+      		<input type="password" th:field="*{checkpw}" placeholder="비밀번호 확인" required />
+      		<input type="text" th:field="*{membername}" placeholder="이름" required />
+      		<input type="text" th:field="*{memberphone}" placeholder="전화번호" required />
+      		<button type="submit">가입하기</button>
+    </form>
+    </div>
+</html>

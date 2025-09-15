@@ -1,0 +1,11 @@
+<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container main-container">
+    <h1>세탁기 돌릴 시간! 👕🌀</h1>
+    <a th:href="@{/reserve/reservation}" class="btn">예약하기</a>
+    <a th:href="@{/notice/notice}" class="btn">게시판</a>
+    <a th:href="@{/member/login}" sec:authorize ="isAnonymous()" class="btn">로그인</a>
+    <a th:href="@{/member/join}" sec:authorize ="isAnonymous()" class="btn">회원가입</a>
+    <a th:href="@{/reserve/orders}" sec:authorize ="isAuthenticated()" class="btn">예약확인</a>
+    <a	th:href="@{member/logout}" sec:authorize ="isAuthenticated()" class="btn">로그아웃</a>
+  </div>
+</html>

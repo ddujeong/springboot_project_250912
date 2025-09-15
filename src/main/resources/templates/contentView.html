@@ -1,0 +1,63 @@
+<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+		<h1 th:text="${notice.btitle}"></h1>
+  <div class="detail-info">
+    <span th:if="${notice.author!=null}" th:text="|작성자 : ${notice.author.membername}|">작성자</span>
+     <span th:text="|조회수 : ${notice.bhit}|"></span>
+    <span th:text="|작성일 : ${#temporals.format(notice.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}|">작성일
+     </span>
+  </div>
+  <div class="detail-content" th:text="${notice.bcontent}"></div>
+   <!-- 댓글 폼 추가 -->
+  <div class="comment-section">
+    <h4>댓글 작성</h4>
+    <form th:action="@{|/comment/create/${notice.id}|}" th:object="${commentsForm}" method="post" class="comment-form">
+    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+     <textarea sec:authorize ="isAuthenticated()" th:field="*{ctext}" placeholder="댓글을 작성해주세요.." rows="4" required ></textarea>
+     <textarea sec:authorize ="isAnonymous()" th:field="*{ctext}" placeholder="로그인 후 작성가능합니다" rows="4" required readonly="readonly" ></textarea>
+    <button type="submit" sec:authorize ="isAnonymous()" class="btn" disabled="disabled">댓글 작성</button>
+    <button type="submit" sec:authorize ="isAuthenticated()" class="btn">댓글 작성</button>
+    </form>
+  </div>
+
+  <!-- 댓글 목록 -->
+  <div class="comments-list" th:each="comment : ${notice.commentList}">
+    <h4 th:text="|${#lists.size(notice.commentList)}개의 답변이 있습니다|"></h4>
+      <div class="comment-item">
+        <div class="comment-info">
+          <span class="comment-author" th:text="${comment.author.membername}"></span>
+          <span class="comment-date" th:text="${#temporals.format(comment.createdate.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd HH:mm')}">
+          </span>
+        </div>
+        <p class="comment-content" th:text="${comment.ctext}"></p>
+        <div class="comment-actions">
+        <input type="hidden" name="bid" value="${notice.id}" /> <!-- 게시글 번호 -->
+          <a th:href="@{|/comment/modify/${comment.id}/bid=${notice.id}|}" class="btn-edit" sec:authorize="isAuthenticated()" 
+          th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">수정</a>
+          <a href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="delete btn-delete" sec:authorize="isAuthenticated()"
+           th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">삭제</a>
+        </div>
+      </div>
+  </div>
+  <a th:href="@{|/notice/modify/${notice.id}|}" class="btn-back"
+  sec:authorize="isAuthenticated()" th:if="${notice.author != null and #authentication.getPrincipal().getUsername() == notice.author.memberid}" >
+  수정</a>
+  <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.id}|}" class="delete btn-back" sec:authorize="isAuthenticated()" 
+  th:if="${notice.author != null and #authentication.getPrincipal().getUsername() == notice.author.memberid}">삭제</a>
+  <a href="notice" class="btn-back">목록</a>
+</div>
+<script layout:fragment="script" type="text/javascript">
+const delete_elements = document.getElementsByClassName("delete");
+Array.from(delete_elements).forEach(function(element) {
+	element.addEventListener('click',function(){
+		if(confirm("정말로 삭제하시겠습니까?")) {
+			location.href = this.dataset.uri;
+		};
+	});
+});
+</script>
+</html>

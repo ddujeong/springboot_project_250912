@@ -1,0 +1,18 @@
+<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+	<div layout:fragment="content" class="container">
+	<h2>게시글 수정</h2>
+
+  <form th:action="@{|/notice/modify/${id}|}" method="post" th:object="${noticeForm}">
+    <label for="title">제목</label>
+    <input type="text" th:field="*{btitle}" required />
+
+    <label for="writer">작성자</label>
+    <input type="text"  th:field="*{membername}" readonly />
+
+    <label for="content">내용</label>
+    <textarea  th:field="*{bcontent}" rows="8" required></textarea>
+	
+    <button type="submit">수정완료</button>
+  </form>
+  </div>
+</html>

@@ -36,12 +36,13 @@ public class Notice {
 	@Column(length = 500)
 	private String bcontent;
 	
-	private Integer bhit;
+	
+	private Integer bhit = 0;
 	
 	private LocalDateTime createdate;
 	
 	@OneToMany(mappedBy = "notice", cascade = CascadeType.REMOVE)
-	private List<Comment> commentList;
+	private List<Comments> commentList;
 	
 	@ManyToOne
 	private Member author;

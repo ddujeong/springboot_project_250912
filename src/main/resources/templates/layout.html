@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+	<title>빨래방</title>
+</head>
+<body>
+	<!-- 네비게이션 바 START-->
+	<nav th:replace="~{header :: headerFragment}"></nav>
+	<!-- 네비게이션 바 END -->
+	<!-- 기본 탬플릿 안에 삽입될 내용 START -->
+	<th:block layout:fragment="content"></th:block>
+	<!-- 기본 탬플릿 안에 삽입될 내용 END -->
+	<!-- Bootstrap JS -->
+	<script th:src="@{/bootstrap.min.js}"></script>
+	<!-- 자바 스크립트 Start -->
+	<th:block layout:fragment="script"></th:block>
+	<!-- 자바 스크립트 End -->
+	<nav th:replace="~{footer :: footerFragment}"></nav>
+</body>
+</html>

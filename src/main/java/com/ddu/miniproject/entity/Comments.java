@@ -14,24 +14,21 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "comment")
+@Table(name = "comments")
 @SequenceGenerator(
-		name = "COMMENT_SEQ_GENERATOR", // JPA 내부 시퀀스 이름
-		sequenceName = "COMMENT_SEQ", // 실제 DB 시퀀스 이름
+		name = "COMMENTS_SEQ_GENERATOR", // JPA 내부 시퀀스 이름
+		sequenceName = "COMMENTS_SEQ", // 실제 DB 시퀀스 이름
 		initialValue = 1 , // 시퀀스 증가 값
 		allocationSize = 1 // 시퀀스 증가치
 		)
-public class Comment {
+public class Comments {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator ="COMMENT_SEQ_GENERATOR" )  // 자동증가 (AI)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator ="COMMENTS_SEQ_GENERATOR" )  // 자동증가 (AI)
 	private Integer id;
 	
-	@Column(length = 200)
-	private String ctext;
-	
 	@Column(length = 500)
-	private String cdate;
+	private String ctext;
 	
 	private LocalDateTime createdate;
 	
