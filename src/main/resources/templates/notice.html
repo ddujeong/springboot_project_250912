@@ -1,7 +1,11 @@
 <html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 	<div layout:fragment="content" class="container">
      <h1>공지사항</h1>
-    <button class="btn-write" th:onclick="|window.location.href='@{/notice/create}'|">글쓰기</button>
+     <div class="search-bar-container">
+  <input type="text" name="kw" id="search_kw" th:value="${kw}" placeholder="검색어를 입력하세요..." />
+  <button class="search-btn" id="btn_search" th:onclick="|window.location.href='@{/notice/create}'|">검색</button>
+  <button class="search-btn" th:onclick="|window.location.href='@{/notice/create}'|">글쓰기</button>
+</div>
     <table class="table">
       <thead>
         <tr>
@@ -15,7 +19,7 @@
       <tbody>
       	<tr th:each="notice, loop  : ${paging}">
           <td th:text="${paging.totalElements -(paging.number * paging.size) -(loop.index)}"></td>
-          <td><a th:href="@{|/notice/contentView/${notice.id}|}"  th:text="${notice.btitle}"></a>
+          <td><a th:href="@{|/notice/contentView/${notice.id}|}"  th:text="${notice.btitle.length() > 17} ? ${notice.btitle.substring(0,17)} + '...' : ${notice.btitle}" ></a>
           <span	th:if="${#lists.size(notice.commentList)} > 0"
 				th:text="|[${#lists.size(notice.commentList)}]|"></span></td>
           <td th:text="${notice.author.membername}"></td>
@@ -28,31 +32,53 @@
     </table>
     <!-- 페이징 버튼 -->
     <!-- 페이징 버튼 -->
-<div th:if="${!paging.isEmpty()}">
-    <div class="pagination">
+    <div class="pagination" th:if="${!paging.isEmpty()}">
         <!-- 처음 버튼 -->
-        <button th:class="${paging.first} ? 'disabled' : ''"
-                th:onclick="'location.href=\'/notice?page=0\';'">처음</button>
+        <button class="page-link" th:style="${paging.first} ? 'display:none' : ''" th:data-page="0">처음</button>
 
         <!-- 이전 버튼 -->
-        <button th:class="${!paging.hasPrevious} ? 'disabled' : ''"
-                th:onclick="'location.href=\'/notice?page=' + (${paging.number} - 1) + '\';'">◀</button>
+        <button class="page-link" th:style="${!paging.hasPrevious} ? 'display:none' : ''" th:data-page="${paging.number-1}">◀</button>
 
         <!-- 페이지 숫자 버튼들 -->
-        <button th:each="i : ${#numbers.sequence(0, paging.totalPages-1)}"
-                th:class="${i == paging.number} ? 'active' : ''"
-                th:onclick="'location.href=\'/notice?page=' + ${i} + '\';'"
-                th:text="${i + 1}">
+        <button class="page-link"
+        		th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}"
+        		th:if="${page >= paging.number-2 and page <= paging.number +2}"
+                th:classappend="${page == paging.number} ? 'active'"
+              	th:data-page="${page}"
+                th:text="${page + 1}">
         </button>
 
         <!-- 다음 버튼 -->
-        <button th:class="${!paging.hasNext} ? 'disabled' : ''"
-                th:onclick="'location.href=\'/notice?page=' + (${paging.number} + 1) + '\';'">▶</button>
+        <button class="page-link" th:style="${!paging.hasNext} ? 'display:none' : ''" th:data-page="${paging.number+1}">▶</button>
 
         <!-- 마지막 버튼 -->
-        <button th:class="${paging.last} ? 'disabled' : ''"
-                th:onclick="'location.href=\'/notice?page=' + (${paging.totalPages} - 1) + '\';'">마지막</button>
+        <button class="page-link" th:style="${paging.last} ? 'display:none' : ''" th:data-page="${paging.totalPages-1}">마지막</button>
     </div>
+    <!-- 검색용 폼 (숨김) -->
+    <form th:action="@{/notice/notice}" method="get" id="searchForm" style="display: none;">
+        <input type="hidden" id="kw" name="kw" th:value="${kw}">
+        <input type="hidden" id="page" name="page" th:value="${paging.number}">
+    </form>
 </div>
-</div>
+<script layout:fragment="script" type="text/javascript">
+	// 페이비 번호 전송 시 -> kw (검색어)를 같이 전송하기 위한 자바 스크립트
+		const page_elements = document.getElementsByClassName("page-link");
+		Array.from(page_elements).forEach(function(element) {
+			element.addEventListener('click',function(){
+				document.getElementById('page').value = this.dataset.page;
+				document.getElementById('searchForm').submit();
+		});
+		});
+		// kw (검색어) 입력 시 페이지 번호를 같이 전송하기 위한 자바 스크립트
+		const btn_search = document.getElementById("btn_search");
+		btn_search.addEventListener('click',function(){
+			document.getElementById('kw').value = document.getElementById('search_kw').value;
+			document.getElementById('page').value = 0; // 검색 버튼을 클릭 할 경우 0 페이지부터 조회함
+			document.getElementById('searchForm').submit();
+		});
+		function submitPage(btn){
+		    document.getElementById('page').value = btn.dataset.page;
+		    document.getElementById('searchForm').submit();
+		}
+</script>
 </html>

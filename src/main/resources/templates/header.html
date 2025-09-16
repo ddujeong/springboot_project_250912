@@ -14,7 +14,7 @@
 
     <!-- 인증 항목 -->
     <li th:classappend="${#authorization.expression('isAuthenticated()') ? '' : 'hidden'}">
-      <a th:href="@{|/member/myPage/${#authentication.name}|}">마이페이지</a>
+      <a th:href="@{|/member/myPage|}">마이페이지</a>
     </li>
     <li th:classappend="${#authorization.expression('isAuthenticated()') ? '' : 'hidden'}">
       <a th:href="@{/member/logout}">로그아웃</a>

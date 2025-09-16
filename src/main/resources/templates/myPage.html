@@ -7,6 +7,7 @@
   <div class="mypage-tabs">
   <button class="tab-btn active" data-tab="profile">회원정보</button>
     <button class="tab-btn" data-tab="profileEdit">회원정보 수정</button>
+    <button class="tab-btn" data-tab="scrap">스크랩</button>
     <button class="tab-btn" data-tab="reservations">예약 확인</button>
   </div>
   <div class="tab-content" id="profile" th:object="${member}">
@@ -14,7 +15,8 @@
     <label>아이디: <input type="text" th:field="*{memberid}"  readonly="readonly"/></label><br>
       <label>이름: <input type="text" th:field="*{membername}" readonly="readonly" /></label><br>
       <label>핸드폰: <input type="text" th:field="*{memberphone}" readonly="readonly" /></label><br>
-    <form th:action="@{|/member/memberDelete/${member.memberid}|}" method="post" onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
+    <form th:action="@{|/member/memberDelete|}" method="post" onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
+     <input type="hidden" th:field=*{memberid}>
      <button type="submit" class="btn-cancel">회원탈퇴</button>
     </form>
   </div>
@@ -30,9 +32,18 @@
       <button type="submit" class="btn-save">저장</button>
     </form>
   </div>
-
+	<div class="tab-content" id="scrap">
+    <h3>스크랩한 글</h3>
+    <div th:if="${#lists.isEmpty(member.scrapnotices)}" class="no-reservation">
+        <p>아직 스크랩한 글이 없습니다.</p>
+    </div>
+    <div th:each="notice : ${member.scrapnotices}">
+        <a th:href="@{|/notice/contentView/${notice.id}|}" th:text="${notice.btitle}">글 제목</a>
+        <span>📌 <span th:text="${#lists.size(notice.scrapers)}">0</span></span>
+    </div>
+</div>
   <!-- 예약 확인 -->
-  <div class="tab-content" id="reservations" style="display:none;">
+  <div class="tab-content" id="reservations">
     <h3>내 예약 목록</h3>
      <table class="table" th:if="${reserves != null and !reserves.isEmpty()}">
       <thead>

@@ -48,7 +48,7 @@ public class ReserveController {
 		
 		if (selectedDate == null) selectedDate = today;
 		List<Reserve> reservedList = reserveService.getReservesByDate(selectedDate, machine);
-		List<String> reservedTimes = reservedList.stream().map(r -> r.getReservetime().toLocalTime().toString()).toList();
+		List<String> reservedTimes = reservedList.stream().map(r -> r.getReservetime().toLocalTime().toString().substring(0,5)).toList();
 		
 		
 		 Map<String, Boolean> timeOptions = new LinkedHashMap<>();
@@ -69,16 +69,21 @@ public class ReserveController {
 	}
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/reserveOk")
-	public String reserveOk(@RequestParam("machine") String machine,@RequestParam("rdate")@DateTimeFormat(pattern="yyyy-MM-dd")LocalDate rdate,@RequestParam("rtime")String rtime, Principal principal) {
-		Member member = memberService.getMember(principal.getName());
+	public String reserveOk(@RequestParam("machine") String machine,@RequestParam("rdate")@DateTimeFormat(pattern="yyyy-MM-dd")LocalDate rdate,@RequestParam(value = "rtime" ,required = false)String rtime, Principal principal, Model model) {
 		
+		
+		 if (rtime == null || rtime.isEmpty()) {
+		        model.addAttribute("error", "예약 시간을 선택해주세요.");
+		   return reservation(machine, rdate, model);
+		 }
 		LocalTime time = LocalTime.parse(rtime);
 		LocalDateTime rdatetime =LocalDateTime.of(rdate, time);
-		
+		Member member = memberService.getMember(principal.getName());
 		reserveService.reserve(machine,rdatetime, member);
 		
-		return "redirect:/reserve/orders";
+		return "redirect:/member/myPage";
 	}
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/reserveDelete/{id}")
 	public String delete(@PathVariable("id") Integer id, Principal principal) {
 		Reserve reserve = reserveService.getReserve(id);

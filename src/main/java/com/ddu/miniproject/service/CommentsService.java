@@ -47,6 +47,10 @@ public class CommentsService {
 	public void delete(Comments comments) {
 		commentRepository.delete(comments);
 	}
+	public void vote(Member member,Comments comments ) {
+		comments.getVoter().add(member);
+		commentRepository.save(comments);
+	}
 	
 	
 	

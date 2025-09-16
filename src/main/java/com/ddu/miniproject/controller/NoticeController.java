@@ -78,6 +78,7 @@ public class NoticeController {
 		noticeService.create(noticeForm.getBtitle(),noticeForm.getBcontent(), member);
 		return"redirect:/notice/notice";
 	}
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping(value = "/modify/{id}") // 파라미터 이름 없이 값만 넘어왔을때 처리
 	public String modify(@PathVariable("id") Integer id, NoticeForm noticeForm, Principal principal) {
 		Notice notice =noticeService.getNotice(id);
@@ -94,6 +95,7 @@ public class NoticeController {
 		
 		return "noticeModify";
 	}
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value = "/modify/{id}")
 	public String noticeModify(@PathVariable("id") Integer id, @Valid NoticeForm noticeForm, BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
@@ -107,6 +109,7 @@ public class NoticeController {
 		noticeService.modify(notice, noticeForm.getBtitle(), noticeForm.getBcontent());
 		return String.format("redirect:/notice/contentView/%s", id);
 	}
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping(value = "/delete/{id}")
 	public String noticeDelete(@PathVariable("id") Integer id, Principal principal) {
 		Notice notice = noticeService.getNotice(id);
@@ -116,6 +119,26 @@ public class NoticeController {
 		}
 		noticeService.delete(notice);
 		return"redirect:/";
+	}
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping(value = "/vote/{id}")
+	public String noticeVote(@PathVariable("id") Integer id, Principal principal) {
+		Notice notice = noticeService.getNotice(id);
+		Member member =memberService.getMember(principal.getName());
+		
+		noticeService.vote(member, notice);
+		
+		return String.format("redirect:/notice/contentView/%s", id) ;
+	}
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping(value = "/scrap/{id}")
+	public String noticeScrap(@PathVariable("id") Integer id, Principal principal) {
+		Notice notice = noticeService.getNotice(id);
+		Member member =memberService.getMember(principal.getName());
+		
+		noticeService.scrap(member, notice);
+		
+		return String.format("redirect:/notice/contentView/%s", id) ;
 	}
 
 }

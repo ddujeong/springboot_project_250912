@@ -1,33 +1,46 @@
-<html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
-	<div layout:fragment="content" class="container">
-     <h1>무인 빨래방 키오스크</h1>
-    <form th:action="@{/reserve/reserveOk}" method="post">
-      <label for="machine">기기 선택</label>
-      <select id="machine" name="machine">
-        <option value="세탁기">세탁기</option>
-        <option value="건조기">건조기</option>
-        <option value="탈수기">탈수기</option>
-      </select>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<div layout:fragment="content" class="container">
+    <h1>무인 빨래방 키오스크</h1>
 
-      <label for="date">예약 날짜</label>
-      <input type="date" id="rdate" name="rdate"
-      	th:attr="min=${minDate}" required="required"/>
-
-      <label for="time">예약 시간</label>
-      <select id="rtime" name="rtime" required>
-    <option value="" disabled selected>시간 선택</option>
-    <option th:each="entry : ${timeOptions}" 
-            th:value="${entry.key}" 
-            th:text="${entry.key + (entry.value ? ' (예약완료)' : '')}"
-            th:disabled="${entry.value}">
-    </option>
-</select>
-
-
-      <button type="submit">예약하기</button>
-    </form>
+    <!-- 에러 메시지 표시 -->
+    <div th:if="${error}" style="color:red; margin-bottom:10px;">
+        <p th:text="${error}"></p>
     </div>
-    <script type="text/javascript" layout:fragment="script">
+
+    <form th:action="@{/reserve/reserveOk}" method="post">
+        <!-- 기기 선택 -->
+        <label for="machine">기기 선택</label>
+        <select id="machine" name="machine" th:onchange="this.form.submit()">
+            <option value="세탁기" th:selected="${selectedMachine=='세탁기'}">세탁기</option>
+            <option value="건조기" th:selected="${selectedMachine=='건조기'}">건조기</option>
+            <option value="탈수기" th:selected="${selectedMachine=='탈수기'}">탈수기</option>
+        </select>
+
+        <!-- 예약 날짜 -->
+        <label for="date">예약 날짜</label>
+        <input type="date" id="rdate" name="rdate"
+               th:value="${selectedDate}"
+               th:attr="min=${minDate}" 
+               onchange="this.form.submit(); document.getElementById('rtime').selectedIndex = 0;"
+               required="required"/>
+
+        <!-- 예약 시간 -->
+        <label for="time">예약 시간</label>
+        <select id="rtime" name="rtime" required>
+            <option value="" disabled selected>시간 선택</option>
+            <option th:each="entry : ${timeOptions}" 
+                    th:value="${entry.key}" 
+                    th:text="${entry.key + (entry.value ? ' (예약완료)' : '')}" 
+                    th:disabled="${entry.value}">
+            </option>
+        </select>
+
+        <button type="submit">예약하기</button>
+    </form>
+</div>
+
+<!-- JS: 오늘 지난 시간만 UI에서 disabled (선택은 서버에서도 막음) -->
+<script type="text/javascript" layout:fragment="script">
     const rdate = document.getElementById('rdate');
     const rtime = document.getElementById('rtime');
 
@@ -37,13 +50,16 @@
 
         Array.from(rtime.options).forEach(option => {
             if (!option.value) return; // placeholder
+
             const [hour, minute] = option.value.split(':').map(Number);
             const optionTime = new Date(selectedDate);
             optionTime.setHours(hour, minute, 0, 0);
-            option.disabled = (selectedDate.toDateString() === now.toDateString() && optionTime <= now)
-                               || reservedTimes.includes(option.value);
+
+            // 오늘 지난 시간만 disable
+            option.disabled = selectedDate.toDateString() === now.toDateString() && optionTime <= now;
         });
     }
+
     rdate.addEventListener('change', filterPastTimes);
     window.addEventListener('load', filterPastTimes);
 </script>

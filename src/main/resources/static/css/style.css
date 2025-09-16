@@ -41,6 +41,50 @@ body {
 .btn-write:hover {
   background-color: #0056b3;
 }
+/* 좋아요 버튼 기본 스타일 */
+.like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 25px;
+  border: 2px solid #c6d8e8;
+  background: #f7fbff; /* 기본 연한 하늘색 배경 */
+  color: #6998c4;      /* 기본 텍스트 색 */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 6px rgba(198, 216, 232, 0.3);
+}
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.like-btn:hover {
+  background: #eaf3fb;
+  border-color: #6998c4;
+}
+
+/* 좋아요 눌린 상태 */
+.like-btn.liked {
+  background: linear-gradient(135deg, #5a8fc1, #8bb0dc); /* 진한 하늘색 */
+  color: white;
+  border: none;
+  box-shadow: 0 6px 12px rgba(90, 143, 193, 0.5);
+}
+
+.like-btn.liked:hover {
+  background: linear-gradient(135deg, #507ec5, #6998c4); /* hover 시 그라데이션 변화 */
+}
+
+/* 숫자(span) 강조 */
+.like-btn span {
+  font-weight: 700;
+  font-size: 14px;
+  color: inherit; /* 상태 따라 글자색 유지 */
+}
 
 
 /* 제목 */
@@ -439,6 +483,82 @@ button:active {
 
 .comment-actions .btn-delete:hover {
   background-color: #c0392b;
+}
+/* 글쓰기 버튼 + 검색창 한 줄 배치 */
+.search-bar-container {
+  display: flex;
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 10px; /* 버튼과 검색창 간격 */
+  margin-bottom: 20px;
+}
+
+/* 글쓰기 버튼 높이와 스타일 통일 */
+.search-bar-container .btn-write {
+    height: 42px !important;
+    padding: 0 18px !important;
+    border-radius: 25px !important;
+    font-size: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+
+/* 검색 input */
+.search-bar-container input[type="text"] {
+  flex: 1; /* 가능한 공간 모두 차지 */
+  height: 42px; /* 버튼과 동일 높이 */
+  padding: 0 16px;
+  font-size: 15px;
+  border: 2px solid #c6d8e8;
+  border-radius: 25px;
+  background: #f5f9fc;
+  color: #4a5a6a;
+  box-sizing: border-box;
+}
+
+.search-bar-container input[type="text"]:focus {
+  border-color: #87b1d9;
+  box-shadow:
+    0 0 10px #a9c8ea,
+    inset 0 0 10px #bfd7f2;
+  background: #e9f1fa;
+}
+
+/* 검색 버튼 (선택사항) */
+.search-bar-container button.search-btn {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 15px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #7ba9d6, #a7c0e8);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    0 6px 14px rgba(123, 169, 214, 0.7),
+    0 0 25px rgba(167, 192, 232, 0.5);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.search-bar-container button.search-btn:hover {
+  background: linear-gradient(135deg, #5a8fc1, #8bb0dc);
+  box-shadow:
+    0 8px 20px rgba(90, 143, 193, 0.9),
+    0 0 35px rgba(139, 176, 220, 0.6);
+}
+.scrap-btn {
+    background-color: #e0e0e0;
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.scrap-btn.scraped {
+    background-color: #f7c948; /* 노란색으로 스크랩 표시 */
+    color: white;
 }
 
 

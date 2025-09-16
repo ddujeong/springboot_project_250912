@@ -47,9 +47,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 			    	       "       LEFT OUTER JOIN member m2 ON c.author_memberid = m2.memberid " +
 			    	       "       WHERE n.btitle LIKE '%' ||:kw || '%' " +
 			    	       "          OR n.bcontent LIKE  '%' ||:kw || '%'" +
-			    	       "          OR m1.memberid LIKE  '%' ||:kw || '%' " +
+			    	       "          OR m1.membername LIKE  '%' ||:kw || '%' " +
 			    	       "          OR c.ctext LIKE  '%' ||:kw || '%' " +
-			    	       "          OR m2.memberid LIKE  '%' ||:kw || '%' " +
+			    	       "          OR m2.membername LIKE  '%' ||:kw || '%' " +
 			    	       "       ORDER BY n.createdate DESC " +
 			    	       "   ) n WHERE ROWNUM <= :endRow " +
 			    	       ") WHERE rnum > :startRow", 
@@ -70,4 +70,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 	    	       "          OR m2.memberid LIKE  '%' ||:kw || '%' ",
 	    	       nativeQuery = true)
 		int countSearchResult(@Param("kw") String kw);
+		
+		public Optional<Notice> findById(Integer id);
 }

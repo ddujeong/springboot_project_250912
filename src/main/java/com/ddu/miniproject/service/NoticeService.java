@@ -13,14 +13,23 @@ import org.springframework.stereotype.Service;
 
 import com.ddu.miniproject.entity.Member;
 import com.ddu.miniproject.entity.Notice;
+import com.ddu.miniproject.repository.MemberRepository;
 import com.ddu.miniproject.repository.NoticeRepository;
 import com.ddu.miniproject.security.DataNotFoundException;
+
+import groovyjarjarantlr4.v4.parse.ANTLRParser.element_return;
 
 @Service
 public class NoticeService {
 
+    private final MemberRepository memberRepository;
+
 	@Autowired
     NoticeRepository noticeRepository;
+
+    NoticeService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 	
 	public List<Notice> getList(){
 		return noticeRepository.findAll();
@@ -66,6 +75,22 @@ public class NoticeService {
 	}
 	public void hit(Integer id) {
 		noticeRepository.upBhit(id);
+	}
+	public void vote(Member member, Notice notice) {
+		notice.getVoter().add(member);
+		noticeRepository.save(notice);
+	}
+	public void scrap(Member member, Notice notice) {
+		
+		if (notice.getScrapers().contains(member)) {
+			notice.getScrapers().remove(member);
+			member.getScrapnotices().remove(notice);
+		} else {
+			notice.getScrapers().add(member);
+			member.getScrapnotices().add(notice);
+		}
+		noticeRepository.save(notice);
+		memberRepository.save(member);
 	}
 
 }

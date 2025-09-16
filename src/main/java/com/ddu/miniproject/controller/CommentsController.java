@@ -3,7 +3,6 @@ package com.ddu.miniproject.controller;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -12,15 +11,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ddu.miniproject.entity.Comments;
 import com.ddu.miniproject.entity.Member;
 import com.ddu.miniproject.entity.Notice;
-import com.ddu.miniproject.repository.NoticeRepository;
 import com.ddu.miniproject.security.CommentsForm;
-import com.ddu.miniproject.security.NoticeForm;
 import com.ddu.miniproject.service.CommentsService;
 import com.ddu.miniproject.service.MemberService;
 import com.ddu.miniproject.service.NoticeService;
@@ -43,7 +39,7 @@ public class CommentsController {
 	@Autowired
 	MemberService memberService;
 
-	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value = "/create/{id}")
 	public String createComment(Model model,@PathVariable("id") Integer id,@Valid CommentsForm commentsForm, BindingResult bindingResult, Principal principal) {
 		Notice notice= noticeService.getNotice(id);
@@ -57,6 +53,7 @@ public class CommentsController {
 		
 		return String.format("redirect:/notice/contentView/%s#comment_%s", id, comment.getId());
 	}
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping(value = "/modify/{id}/bid={bid}")
 	public String modify(@PathVariable("id") Integer id,@PathVariable("bid") Integer bid, CommentsForm commentsForm, Principal principal, Model model) {
 		Notice notice = noticeService.getNotice(bid);
@@ -68,6 +65,7 @@ public class CommentsController {
 		model.addAttribute("notice",notice);
 		return "commentModify";
 	}
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value = "/modify/{id}")
 	public String commentModify(@PathVariable("id") Integer id, @Valid CommentsForm commentsForm, BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
@@ -81,6 +79,7 @@ public class CommentsController {
 		commentsService.modify(comment, commentsForm.getCtext());
 		return String.format("redirect:/notice/contentView/%s#comment_%s", comment.getNotice().getId(), comment.getId());
 	}
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping(value = "/delete/{id}") // 파라미터 이름 없이 값만 넘어왔을때 처리
 	public String commentDelete(@PathVariable("id") Integer id, Principal principal) {
 		Comments comment = commentsService.getComment(id);
@@ -90,6 +89,15 @@ public class CommentsController {
 		}
 		commentsService.delete(comment);
 		return String.format("redirect:/notice/contentView/%s", comment.getNotice().getId()) ; // 리스트로 이동
+	}
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping(value = "/vote/{id}")
+	public String noticeVote(@PathVariable("id") Integer id, Principal principal) {
+		Comments comments = commentsService.getComment(id);
+		Member member =memberService.getMember(principal.getName());
+		
+		commentsService.vote(member, comments);
+		return String.format("redirect:/notice/contentView/%s#comments_%s", comments.getNotice().getId(), comments.getId()) ;
 	}
 	
 }

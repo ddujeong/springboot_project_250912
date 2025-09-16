@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ddu.miniproject.entity.Member;
 import com.ddu.miniproject.entity.Reserve;
@@ -29,8 +30,8 @@ public class ReserveService {
 			throw new IllegalArgumentException("과거 시간에는 예약할 수 없습니다.");
 		}
 		
-		LocalDateTime start = rdatetime.minusSeconds(3600);
-		LocalDateTime end = rdatetime.plusSeconds(3600);
+		LocalDateTime start = rdatetime;
+		LocalDateTime end = rdatetime.plusHours(1);
 		List<Reserve> _reserve = reserveRepository.findByMachineAndReservetimeBetween(machine, start, end);
 		
 		if (!_reserve.isEmpty()) {
@@ -66,6 +67,17 @@ public class ReserveService {
 		LocalDateTime start = date.atStartOfDay();
 		LocalDateTime end = date.atTime(LocalTime.MAX);
 		return reserveRepository.findByMachineAndReservetimeBetween(machine, start, end);
+	}
+	@Transactional
+	public void updateStatus(List<Reserve> reserves) {
+		for (Reserve r : reserves) {
+		    if (r.getReservetime().isBefore(LocalDateTime.now())) {
+		        r.setStatus("진행중");
+		        if ( LocalDateTime.now().isAfter( r.getReservetime().plusMinutes(60))) {
+					r.setStatus("세탁완료");
+				}
+		    }
+		}
 	}
 
 }

@@ -8,6 +8,18 @@
                                                 .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
                                                 'yyyy-MM-dd HH:mm')}|">작성일
      </span>
+     <button class="like-btn" th:attr="data-id=${notice.id}"
+            th:classappend="${notice.voter} ? ' liked' : ''"
+            th:data-uri="@{|/notice/vote/${notice.id}|}"
+            sec:authorize="isAuthenticated()">
+        👍 <span th:text="${#lists.size(notice.voter)}">0</span>
+    </button>
+    <button class="scrap-btn" 
+        th:classappend="${notice.scrapers.contains(#authentication.principal)} ? 'scraped' : ''"
+        th:data-uri="@{|/notice/scrap/${notice.id}|}"
+        sec:authorize="isAuthenticated()">
+    📌 <span th:text="${#lists.size(notice.scrapers)}">0</span>
+</button>
   </div>
   <div class="detail-content" th:text="${notice.bcontent}"></div>
    <!-- 댓글 폼 추가 -->
@@ -37,9 +49,16 @@
         <div class="comment-actions">
         <input type="hidden" name="bid" value="${notice.id}" /> <!-- 게시글 번호 -->
           <a th:href="@{|/comment/modify/${comment.id}/bid=${notice.id}|}" class="btn-edit" sec:authorize="isAuthenticated()" 
-          th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">수정</a>
+          	 th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">수정</a>
           <a href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="delete btn-delete" sec:authorize="isAuthenticated()"
-           th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">삭제</a>
+          	 th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">삭제</a>
+       	 <button class="like-btn" th:attr="data-id=${comment.id}"
+            th:classappend="${comment.voter} ? ' liked' : ''"
+            th:data-uri="@{|/comment/vote/${comment.id}|}"
+            sec:authorize="isAuthenticated()">
+        👍 <span th:text="${#lists.size(comment.voter)}">0</span>
+    </button>
+		</div>
         </div>
       </div>
   </div>
@@ -48,8 +67,7 @@
   수정</a>
   <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.id}|}" class="delete btn-back" sec:authorize="isAuthenticated()" 
   th:if="${notice.author != null and #authentication.getPrincipal().getUsername() == notice.author.memberid}">삭제</a>
-  <a href="notice" class="btn-back">목록</a>
-</div>
+  <a th:href="@{/notice/notice}" class="btn-back">목록</a>
 <script layout:fragment="script" type="text/javascript">
 const delete_elements = document.getElementsByClassName("delete");
 Array.from(delete_elements).forEach(function(element) {
@@ -58,6 +76,27 @@ Array.from(delete_elements).forEach(function(element) {
 			location.href = this.dataset.uri;
 		};
 	});
+});
+const like_btn_elements = document.getElementsByClassName("like-btn");
+Array.from(like_btn_elements).forEach(function(element) {
+	element.addEventListener('click',function(){
+		
+		if(this.classList.contains('liked')) {
+            alert("이미 추천하셨습니다!");
+            return;
+        }
+		if(confirm("정말로 추천하시겠습니까?")) {
+			location.href = this.dataset.uri;
+		}else {
+            return false;
+        }
+	});
+});
+const scrap_buttons = document.getElementsByClassName("scrap-btn");
+Array.from(scrap_buttons).forEach(btn => {
+    btn.addEventListener('click', function() {
+        location.href = this.dataset.uri;
+    });
 });
 </script>
 </html>

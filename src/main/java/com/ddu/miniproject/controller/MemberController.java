@@ -1,13 +1,14 @@
 package com.ddu.miniproject.controller;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,8 +25,8 @@ import com.ddu.miniproject.security.MemberCreateForm;
 import com.ddu.miniproject.service.MemberService;
 import com.ddu.miniproject.service.ReserveService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.val;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/member")
 public class MemberController {
 
+    private final SecurityFilterChain filterChain;
+
     private final MemberRepository memberRepository;
 	
 	@Autowired
@@ -41,8 +44,9 @@ public class MemberController {
 	@Autowired
 	ReserveService reserveService;
 
-    MemberController(MemberRepository memberRepository) {
+    MemberController(MemberRepository memberRepository, SecurityFilterChain filterChain) {
         this.memberRepository = memberRepository;
+        this.filterChain = filterChain;
     }
 	
 	@GetMapping(value = "/join")
@@ -72,26 +76,25 @@ public class MemberController {
 	public String login() {
 		return "login";
 	}
-	@GetMapping(value = "/memberDelete/{memberid}")
-	public String memberDelete(@PathVariable("memberid")String memberid,Principal principal ) {
+	@PreAuthorize("isAuthenticated()")
+	@PostMapping(value = "/memberDelete")
+	public String memberDelete(@RequestParam("memberid") String memberid,Principal principal, HttpServletRequest request ) {
 		Member member = memberService.getMember(memberid);
 		
 		if (!member.getMemberid().equals(principal.getName())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 		memberService.delete(member);
+		request.getSession().invalidate();
+		SecurityContextHolder.clearContext();
 		return "redirect:/";
 	}
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping(value = "/myPage/{memberid}")
+	@GetMapping(value = "/myPage")
 	public String myPage(Principal principal , Model model) {
 		Member member =memberService.getMember(principal.getName());
 		List<Reserve> reserves = reserveService.getReserveList(member);
-		for (Reserve r : reserves) {
-		    if (r.getReservetime().isBefore(LocalDateTime.now())) {
-		        r.setStatus("진행중");
-		    }
-		}
+		reserveService.updateStatus(reserves);
 		if (!member.getMemberid().equals(principal.getName())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
@@ -104,9 +107,9 @@ public class MemberController {
 		    // 비밀번호는 비워두는 것이 일반적
 		
 	    model.addAttribute("memberCreateForm", form);
-	    System.out.println(reserves.get(0).getMachine());
 		return "myPage";
 	}
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value = "/modify/{memberid}")
 	public String memberModify(@PathVariable("memberid")String memberid, @Valid MemberCreateForm memberCreateForm,BindingResult bindingResult, Principal principal, Model model) {
 		if (bindingResult.hasErrors()) {
