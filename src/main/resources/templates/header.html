@@ -1,16 +1,25 @@
 <html  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<nav th:fragment="headerFragment">
-<nav class="navbar">
+<nav th:fragment="headerFragment" class="navbar">
   <ul>
   	<li><a th:href="@{/}">홈으로</a></li>
     <li><a th:href="@{/reserve/reservation}">예약하기</a></li>
     <li><a th:href="@{/notice/notice}">게시판</a></li>
-    <li><a th:href="@{/member/login}" sec:authorize ="isAnonymous()" >로그인</a></li>
-    <li><a th:href="@{/member/join}" sec:authorize ="isAnonymous()" >회원가입</a></li>
-    <li><a th:href="@{/map}" >오시는길</a></li>
-    <li><a th:href="@{/reserve/orders}" sec:authorize ="isAuthenticated()" >예약확인</a></li>
-    <li><a th:href="@{/member/logout}" sec:authorize ="isAuthenticated()" >로그아웃</a></li>
+    <!-- 로그인 항목 -->
+    <li th:classappend="${#authorization.expression('isAnonymous()') ? '' : 'hidden'}">
+      <a th:href="@{/member/login}">로그인</a>
+    </li>
+    <li th:classappend="${#authorization.expression('isAnonymous()') ? '' : 'hidden'}">
+      <a th:href="@{/member/join}">회원가입</a>
+    </li>
+
+    <!-- 인증 항목 -->
+    <li th:classappend="${#authorization.expression('isAuthenticated()') ? '' : 'hidden'}">
+      <a th:href="@{|/member/myPage/${#authentication.name}|}">마이페이지</a>
+    </li>
+    <li th:classappend="${#authorization.expression('isAuthenticated()') ? '' : 'hidden'}">
+      <a th:href="@{/member/logout}">로그아웃</a>
+    </li>
+  	<li><a th:href="@{/map}" >오시는길</a></li>
   </ul>
-</nav>
 </nav>
 </html>

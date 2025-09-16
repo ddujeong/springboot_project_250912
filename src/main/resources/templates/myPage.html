@@ -1,0 +1,108 @@
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<div layout:fragment="content" class="container">
+  <div class="mypage-container">
+  <h2>마이페이지</h2>
+  
+  <!-- 탭 버튼 -->
+  <div class="mypage-tabs">
+  <button class="tab-btn active" data-tab="profile">회원정보</button>
+    <button class="tab-btn" data-tab="profileEdit">회원정보 수정</button>
+    <button class="tab-btn" data-tab="reservations">예약 확인</button>
+  </div>
+  <div class="tab-content" id="profile" th:object="${member}">
+    <h3>회원정보 </h3>
+    <label>아이디: <input type="text" th:field="*{memberid}"  readonly="readonly"/></label><br>
+      <label>이름: <input type="text" th:field="*{membername}" readonly="readonly" /></label><br>
+      <label>핸드폰: <input type="text" th:field="*{memberphone}" readonly="readonly" /></label><br>
+    <form th:action="@{|/member/memberDelete/${member.memberid}|}" method="post" onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
+     <button type="submit" class="btn-cancel">회원탈퇴</button>
+    </form>
+  </div>
+
+  <!-- 회원정보 수정 -->
+  <div class="tab-content" id="profileEdit" th:object="${memberCreateForm}">
+    <h3>회원정보 수정</h3>
+    <form th:action="@{|/member/modify/${member.memberid}|}" method="post">
+    <label>아이디: <input type="text" th:field="*{memberid}"  readonly="readonly"/></label><br>
+      <label>이름: <input type="text" th:field="*{membername}" /></label><br>
+      <label>비밀번호: <input type="password" th:field="*{memberpw}" /></label><br>
+      <label>핸드폰: <input type="text" th:field="*{memberphone}" /></label><br>
+      <button type="submit" class="btn-save">저장</button>
+    </form>
+  </div>
+
+  <!-- 예약 확인 -->
+  <div class="tab-content" id="reservations" style="display:none;">
+    <h3>내 예약 목록</h3>
+     <table class="table" th:if="${reserves != null and !reserves.isEmpty()}">
+      <thead>
+        <tr>
+          <th>예약 번호</th>
+          <th>기기</th>
+          <th>예약 날짜</th>
+          <th>예약 시간</th>
+          <th>상태</th>
+          <th>취소</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="order, loop : ${reserves}">
+          <td th:text="${order.id}"></td>
+          <td th:text="${order.machine}"></td>
+       	  <td th:text="${#temporals.format(order.reservetime.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'yyyy-MM-dd')}"></td> <!-- 날짜 포맷 -->
+          <td th:text="${#temporals.format(order.reservetime.atZone(T(java.time.ZoneId).of('UTC'))
+                                                .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
+                                                'HH:mm')}"></td> <!-- 시간 포맷 -->
+          <td><span class="status confirmed" th:text="${order.status}"></span></td>
+          <td>
+  			<!-- 예약완료 → 취소 -->
+  			<button class="btn-cancel" 
+          	th:if="${order.status == '예약완료'}" 
+          	th:onclick="|window.location.href='/reserve/reserveDelete/${order.id}'|">
+   			 취소</button>
+			 <!-- 세탁완료 → 삭제 -->
+ 			 <button class="btn-cancel" 
+          	th:if="${order.status == '세탁완료'}" 
+          	th:onclick="|window.location.href='/reserve/reserveDelete/${order.id}'|">
+    		삭제</button>
+			</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="container no-reservation" th:if="${#lists.isEmpty(reserves)}">
+         	<h3>아직 예약이 없습니다!</h3><br>
+          	<a th:href="@{/reserve/reservation}" class="btn-write" >예약하러 가기</a>
+      </div>
+  </div>
+</div>
+
+</div>
+<script type="text/javascript" layout:fragment="script">
+const tabs = document.querySelectorAll('.tab-btn');
+const contents = document.querySelectorAll('.tab-content');
+
+// 서버에서 전달된 탭 변수
+let activeTab = /*[[${tab}]]*/ 'profile'; // 기본은 profile
+
+// 탭 클릭 이벤트
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const target = tab.getAttribute('data-tab');
+    contents.forEach(c => {
+      c.classList.remove('active');
+      if(c.id === target) c.classList.add('active');
+    });
+  });
+});
+
+// 페이지 로드 시 기본 활성화
+const tabToActivate = document.querySelector(`.tab-btn[data-tab="${activeTab}"]`);
+if(tabToActivate) tabToActivate.click();
+</script>
+
+</html>

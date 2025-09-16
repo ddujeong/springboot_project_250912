@@ -11,7 +11,7 @@ import com.ddu.miniproject.entity.Reserve;
 
 public interface ReserveRepository extends JpaRepository<Reserve, Integer> {
 	
-	public Optional<Reserve> findByMachineAndReservetimeBetween(String machine,LocalDateTime start, LocalDateTime end);
+	public List<Reserve> findByMachineAndReservetimeBetween(String machine,LocalDateTime start, LocalDateTime end);
 	
 	public List<Reserve>findByMember(Member member);
 }

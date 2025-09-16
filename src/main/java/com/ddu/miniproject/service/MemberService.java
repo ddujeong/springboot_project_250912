@@ -43,5 +43,11 @@ public class MemberService {
 	public void delete(Member member) {
 		memberRepository.deleteById(member.getMemberid());
 	}
+	public void modify(Member member, String membername, String memberpw, String memberphone) {
+		member.setMembername(membername);
+		member.setMemberpw(memberpw);
+		member.setMemberphone(memberphone);
+		memberRepository.save(member);
+	}
 
 }

@@ -536,6 +536,7 @@ button:active {
   padding: 0;
 }
 
+
 .navbar a {
   color: #6998c4;
   font-weight: 700;
@@ -545,7 +546,9 @@ button:active {
   border-radius: 18px;
   transition: background 0.3s ease, color 0.3s ease;
 }
-
+.hidden {
+  display: none;
+}
 .navbar a:hover,
 .navbar a:focus {
   background: #7ba9d6;
@@ -660,5 +663,87 @@ button:active {
   box-shadow:
     0 8px 20px rgba(90, 143, 193, 0.9),
     0 0 35px rgba(139, 176, 220, 0.6);
+}
+/* ======================= */
+/* 마이페이지 탭 CSS 추가  */
+/* ======================= */
+
+/* 탭 버튼 */
+.mypage-tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  justify-content: center;
+}
+
+.mypage-tabs .tab-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  background: #e9f1fa; /* 기본 연한 배경 */
+  color: #6998c4;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mypage-tabs .tab-btn.active {
+  background: #6998c4; /* 활성 탭 배경 */
+  color: white;        /* 활성 탭 글자색 */
+}
+
+/* 탭 내용 */
+.tab-content {
+  display: none;       /* 기본 숨김 */
+  padding: 20px 0;
+}
+
+.tab-content.active {
+  display: flex;      /* 활성화 시 표시 */
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* 기존 container 안에서만 적용 */
+/* 탭 안 모든 input 통일 */
+.mypage-container .tab-content input[type="text"],
+.mypage-container .tab-content input[type="password"],
+.mypage-container .tab-content input[type="email"],
+.mypage-container .tab-content input[type="date"] {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 20px;
+    border: 2px solid #c6d8e8;
+    box-sizing: border-box;
+    background: #f5f9fc;
+    color: #4a5a6a;
+}
+.mypage-container .tab-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 폼 요소 간 간격 통일 */
+}
+.mypage-container input {
+    box-sizing: border-box; /* padding + border 포함 너비 계산 */
+}
+input[readonly] {
+    background-color: #f5f9fc; /* 일반 input과 동일 */
+    border: 2px solid #c6d8e8; /* 일반 input과 동일 */
+    padding: 14px 18px;
+}
+.mypage-container .tab-content button {
+  margin-top: 10px;
+}
+.mypage-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 혹은 원하는 간격 */
+}
+
+.mypage-container label {
+    display: flex;
+    flex-direction: column; /* label 안에 input이 아래로 */
+    font-weight: 600;
+    font-size: 15px;
 }
 

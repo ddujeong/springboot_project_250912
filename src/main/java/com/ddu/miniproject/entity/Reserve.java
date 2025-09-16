@@ -3,6 +3,8 @@ package com.ddu.miniproject.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -21,6 +23,7 @@ import lombok.Data;
 public class Reserve {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator ="RESERVE_SEQ_GENERATOR" )  // 자동증가 (AI)
 	private Integer id;
 	
 	private String machine;

@@ -1,7 +1,7 @@
 <html  xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
 	<div layout:fragment="content" class="container">
      <h1>무인 빨래방 키오스크</h1>
-    <form action="reserveOk">
+    <form th:action="@{/reserve/reserveOk}" method="post">
       <label for="machine">기기 선택</label>
       <select id="machine" name="machine">
         <option value="세탁기">세탁기</option>
@@ -10,21 +10,41 @@
       </select>
 
       <label for="date">예약 날짜</label>
-      <input type="date" id="rdate" name="rdate" />
+      <input type="date" id="rdate" name="rdate"
+      	th:attr="min=${minDate}" required="required"/>
 
       <label for="time">예약 시간</label>
-      <select id="rtime" name="rtime">
-        <option value="" disabled selected>시간 선택</option>
-        <option value="10:00">10:00</option>
-        <option value="11:00">11:00</option>
-        <option value="12:00">12:00</option>
-        <option value="13:00">13:00</option>
-        <option value="14:00">14:00</option>
-        <option value="15:00">15:00</option>
-        <option value="16:00">16:00</option>
-        <option value="17:00">17:00</option>
-      </select>
+      <select id="rtime" name="rtime" required>
+    <option value="" disabled selected>시간 선택</option>
+    <option th:each="entry : ${timeOptions}" 
+            th:value="${entry.key}" 
+            th:text="${entry.key + (entry.value ? ' (예약완료)' : '')}"
+            th:disabled="${entry.value}">
+    </option>
+</select>
+
+
       <button type="submit">예약하기</button>
     </form>
     </div>
+    <script type="text/javascript" layout:fragment="script">
+    const rdate = document.getElementById('rdate');
+    const rtime = document.getElementById('rtime');
+
+    function filterPastTimes() {
+        const selectedDate = new Date(rdate.value);
+        const now = new Date();
+
+        Array.from(rtime.options).forEach(option => {
+            if (!option.value) return; // placeholder
+            const [hour, minute] = option.value.split(':').map(Number);
+            const optionTime = new Date(selectedDate);
+            optionTime.setHours(hour, minute, 0, 0);
+            option.disabled = (selectedDate.toDateString() === now.toDateString() && optionTime <= now)
+                               || reservedTimes.includes(option.value);
+        });
+    }
+    rdate.addEventListener('change', filterPastTimes);
+    window.addEventListener('load', filterPastTimes);
+</script>
 </html>
