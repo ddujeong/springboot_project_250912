@@ -2,10 +2,13 @@ package com.ddu.miniproject.service;
 
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ddu.miniproject.entity.Comments;
 import com.ddu.miniproject.entity.Member;
@@ -47,8 +50,18 @@ public class CommentsService {
 	public void delete(Comments comments) {
 		commentRepository.delete(comments);
 	}
+	@Transactional
 	public void vote(Member member,Comments comments ) {
-		comments.getVoter().add(member);
+		if (comments.getVoter() ==null) {
+			comments.setVoter(new HashSet<>());
+		}
+		Set<Member> voters = comments.getVoter();
+		
+		if (voters.contains(member)) {
+			voters.remove(member);
+		} else {
+			voters.add(member);
+		}
 		commentRepository.save(comments);
 	}
 	

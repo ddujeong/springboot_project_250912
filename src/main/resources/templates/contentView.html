@@ -8,12 +8,13 @@
                                                 .withZoneSameInstant(T(java.time.ZoneId).of('Asia/Seoul')),
                                                 'yyyy-MM-dd HH:mm')}|">작성일
      </span>
-     <button class="like-btn" th:attr="data-id=${notice.id}"
-            th:classappend="${notice.voter} ? ' liked' : ''"
-            th:data-uri="@{|/notice/vote/${notice.id}|}"
-            sec:authorize="isAuthenticated()">
-        👍 <span th:text="${#lists.size(notice.voter)}">0</span>
-    </button>
+     <button class="like-btn"
+        th:attr="data-id=${notice.id}"
+        th:classappend="${#lists.contains(notice.voter, member)} ? ' liked' : ''"
+        th:data-uri="@{|/notice/vote/${notice.id}|}"
+        sec:authorize="isAuthenticated()">
+    👍 <span th:text="${#lists.size(notice.voter)}">0</span>
+</button>
     <button class="scrap-btn" 
         th:classappend="${notice.scrapers.contains(#authentication.principal)} ? 'scraped' : ''"
         th:data-uri="@{|/notice/scrap/${notice.id}|}"
@@ -56,12 +57,13 @@
           	 th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">수정</a>
           <a href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="delete btn-delete" sec:authorize="isAuthenticated()"
           	 th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.memberid}">삭제</a>
-       	 <button class="like-btn" th:attr="data-id=${comment.id}"
-            th:classappend="${comment.voter} ? ' liked' : ''"
-            th:data-uri="@{|/comment/vote/${comment.id}|}"
-            sec:authorize="isAuthenticated()">
-        👍 <span th:text="${#lists.size(comment.voter)}">0</span>
-    </button>
+       	 <button class="like-btn"
+        th:attr="data-id=${comment.id}"
+        th:classappend="${#lists.contains(comment.voter, member)} ? ' liked' : ''"
+        th:data-uri="@{|/comment/vote/${comment.id}|}"
+        sec:authorize="isAuthenticated()">
+    	👍 <span th:text="${#lists.size(comment.voter)}">0</span>
+		</button>
 		</div>
         </div>
       </div>

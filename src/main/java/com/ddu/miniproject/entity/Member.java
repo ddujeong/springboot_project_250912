@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

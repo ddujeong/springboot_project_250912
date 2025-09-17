@@ -2,14 +2,17 @@ package com.ddu.miniproject.service;
 
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ddu.miniproject.entity.Member;
 import com.ddu.miniproject.entity.Notice;
@@ -76,8 +79,18 @@ public class NoticeService {
 	public void hit(Integer id) {
 		noticeRepository.upBhit(id);
 	}
+	@Transactional
 	public void vote(Member member, Notice notice) {
-		notice.getVoter().add(member);
+		if (notice.getVoter() ==null) {
+			notice.setVoter(new HashSet<>());
+		}
+		Set<Member> voters = notice.getVoter();
+		
+		if (voters.contains(member)) {
+			voters.remove(member);
+		} else {
+			voters.add(member);
+		}
 		noticeRepository.save(notice);
 	}
 	public void scrap(Member member, Notice notice) {
