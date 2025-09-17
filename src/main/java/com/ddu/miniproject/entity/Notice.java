@@ -58,5 +58,5 @@ public class Notice {
 	@ManyToMany(mappedBy ="scrapnotices" )
 	private Set<Member> scrapers;
 	
-	private String category;
+	private String category = "board";
 }

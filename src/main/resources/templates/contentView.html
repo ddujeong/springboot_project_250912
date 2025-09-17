@@ -22,8 +22,13 @@
 </button>
   </div>
   <div class="detail-content" th:text="${notice.bcontent}"></div>
-   <!-- 댓글 폼 추가 -->
-  <div class="comment-section">
+  <a th:href="@{|/notice/modify/${notice.id}|}" class="btn-back"
+  		sec:authorize="isAuthenticated()" 
+  		th:if="${notice.author != null and (#authentication.getPrincipal().getUsername() == notice.author.memberid or #authentication.getPrincipal().getUsername() == 'admin')}">수정</a>
+ 	 <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.id}|}" class="delete btn-back" sec:authorize="isAuthenticated()" 
+  		th:if="${notice.author != null and (#authentication.getPrincipal().getUsername() == notice.author.memberid or #authentication.getPrincipal().getUsername() == 'admin')}">삭제</a>
+  	   <!-- 댓글 폼 추가 -->
+  <div class="comment-section" th:if="${!notice.category.equals('notice')}">
     <h4>댓글 작성</h4>
     <form th:action="@{|/comment/create/${notice.id}|}" th:object="${commentsForm}" method="post" class="comment-form">
     <div th:replace="~{form_errors :: formErrorsFragment}"></div>
@@ -33,7 +38,6 @@
     <button type="submit" sec:authorize ="isAuthenticated()" class="btn">댓글 작성</button>
     </form>
   </div>
-
   <!-- 댓글 목록 -->
   <div class="comments-list" th:each="comment : ${notice.commentList}">
     <h4 th:text="|${#lists.size(notice.commentList)}개의 답변이 있습니다|"></h4>
@@ -61,26 +65,22 @@
 		</div>
         </div>
       </div>
+      <a th:href="@{|/notice/notice/${notice.category}|}" class="btn-back">목록</a>
+      
   </div>
-  <a th:href="@{|/notice/modify/${notice.id}|}" class="btn-back"
-  sec:authorize="isAuthenticated()" th:if="${notice.author != null and #authentication.getPrincipal().getUsername() == notice.author.memberid}" >
-  수정</a>
-  <a href="javascript:void(0);" th:data-uri="@{|/notice/delete/${notice.id}|}" class="delete btn-back" sec:authorize="isAuthenticated()" 
-  th:if="${notice.author != null and #authentication.getPrincipal().getUsername() == notice.author.memberid}">삭제</a>
-  <a th:href="@{/notice/notice}" class="btn-back">목록</a>
+ 
 <script layout:fragment="script" type="text/javascript">
-const delete_elements = document.getElementsByClassName("delete");
-Array.from(delete_elements).forEach(function(element) {
-	element.addEventListener('click',function(){
+	const delete_elements = document.getElementsByClassName("delete");
+		Array.from(delete_elements).forEach(function(element) {
+		element.addEventListener('click',function(){
 		if(confirm("정말로 삭제하시겠습니까?")) {
 			location.href = this.dataset.uri;
 		};
 	});
 });
-const like_btn_elements = document.getElementsByClassName("like-btn");
-Array.from(like_btn_elements).forEach(function(element) {
-	element.addEventListener('click',function(){
-		
+	const like_btn_elements = document.getElementsByClassName("like-btn");
+		Array.from(like_btn_elements).forEach(function(element) {
+		element.addEventListener('click',function(){
 		if(this.classList.contains('liked')) {
             alert("이미 추천하셨습니다!");
             return;
@@ -92,9 +92,9 @@ Array.from(like_btn_elements).forEach(function(element) {
         }
 	});
 });
-const scrap_buttons = document.getElementsByClassName("scrap-btn");
-Array.from(scrap_buttons).forEach(btn => {
-    btn.addEventListener('click', function() {
+	const scrap_buttons = document.getElementsByClassName("scrap-btn");
+		Array.from(scrap_buttons).forEach(btn => {
+    	btn.addEventListener('click', function() {
         location.href = this.dataset.uri;
     });
 });

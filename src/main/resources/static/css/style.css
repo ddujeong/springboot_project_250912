@@ -300,10 +300,10 @@ button:active {
   margin-top: 30px;
   background: linear-gradient(135deg, #6998c4, #507ec5); /* 부드러운 하늘색 그라데이션 */
   color: #fffefc; /* 아주 연한 크림빛 흰색 */
-  padding: 12px 28px;
+  padding: 8px 20px;
   border-radius: 25px;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 15px;
   text-decoration: none;
   cursor: pointer;
   box-shadow:
@@ -312,6 +312,10 @@ button:active {
   transition: background 0.3s ease, box-shadow 0.3s ease;
   user-select: none;
   letter-spacing: 1px;
+}
+.delete btn-back {
+  color: red; /* 아주 연한 크림빛 흰색 */
+  
 }
 
 .btn-back:hover {
@@ -674,6 +678,47 @@ button:active {
   background: #7ba9d6;
   color: white;
 }
+/* 드롭다운 부모 */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none; /* 기본은 안 보이게 */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #ffffff;
+  min-width: 160px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(123, 169, 214, 0.25);
+  z-index: 1;
+  flex-direction: column;
+}
+
+/* hover 시 열리기 */
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+
+.dropdown-content a {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #6998c4;
+  display: block;
+  transition: background 0.3s ease;
+}
+
+.dropdown-content a:hover {
+  background: #e9f1fa;
+}
+
+/* 클릭으로 열릴 때 active 클래스 */
+.dropdown.active .dropdown-content {
+  display: flex;
+}
+
+
 /* style.css 맨 아래쪽에 추가 */
   body, html {
       height: 100%;

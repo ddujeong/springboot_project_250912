@@ -42,12 +42,13 @@ public class NoticeController {
 	MemberService memberService;
 
 	
-	@GetMapping(value = "/notice")
-	public String list(Model model, @RequestParam(value = "page", defaultValue = "0")int page, @RequestParam(value = "kw" , defaultValue = "") String kw) {
-		Page<Notice> paging = noticeService.getPageList(page, kw);
+	@GetMapping(value = "/notice/{category}")
+	public String list(Model model, @RequestParam(value = "page", defaultValue = "0")int page, @RequestParam(value = "kw" , defaultValue = "") String kw, @PathVariable("category") String category) {
+		Page<Notice> paging = noticeService.getPageList(page, kw, category );
 		
 		model.addAttribute("paging", paging);
 		model.addAttribute("kw", kw);
+		model.addAttribute("category", category);
 		
 		return "notice";
 	}
@@ -60,11 +61,14 @@ public class NoticeController {
 		return "contentView";
 	}
 	@PreAuthorize("isAuthenticated()")
-	@GetMapping(value = "/create")
-	public String noticeCreate(NoticeForm noticeForm, Principal principal, Model model) {
+	@GetMapping(value = "/create/{category}")
+	public String noticeCreate(NoticeForm noticeForm, Principal principal, Model model, @PathVariable("category") String category) {
 		 Member member =memberService.getMember(principal.getName());
-		 model.addAttribute("membername",member.getMembername());
-		
+		if (member.getMemberid().equals("admin")) {
+			category ="notice";
+		}
+		model.addAttribute("membername",member.getMembername());
+		model.addAttribute("category", category);
 		return"writeForm";
 	}
 	@PreAuthorize("isAuthenticated()")
@@ -75,8 +79,8 @@ public class NoticeController {
 		if (bindingResult.hasErrors()) {
 			return "notice";
 		}
-		noticeService.create(noticeForm.getBtitle(),noticeForm.getBcontent(), member);
-		return"redirect:/notice/notice";
+		noticeService.create(noticeForm.getBtitle(),noticeForm.getBcontent(), member,noticeForm.getCategory());
+		return"redirect:/notice/notice/" + noticeForm.getCategory();
 	}
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping(value = "/modify/{id}") // 파라미터 이름 없이 값만 넘어왔을때 처리
@@ -99,7 +103,7 @@ public class NoticeController {
 	@PostMapping(value = "/modify/{id}")
 	public String noticeModify(@PathVariable("id") Integer id, @Valid NoticeForm noticeForm, BindingResult bindingResult, Principal principal) {
 		if (bindingResult.hasErrors()) {
-			return "notice";
+			return "noticeModify";
 		}
 		Notice notice =noticeService.getNotice(id);
 		

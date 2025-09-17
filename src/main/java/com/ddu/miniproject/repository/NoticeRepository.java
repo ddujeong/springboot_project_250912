@@ -45,16 +45,17 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 			    	       "       LEFT OUTER JOIN member m1 ON n.author_memberid = m1.memberid " +
 			    	       "       LEFT OUTER JOIN comments c ON c.notice_id = n.id " +
 			    	       "       LEFT OUTER JOIN member m2 ON c.author_memberid = m2.memberid " +
-			    	       "       WHERE n.btitle LIKE '%' ||:kw || '%' " +
+			    	       "       WHERE ( n.btitle LIKE '%' ||:kw || '%' " +
 			    	       "          OR n.bcontent LIKE  '%' ||:kw || '%'" +
 			    	       "          OR m1.membername LIKE  '%' ||:kw || '%' " +
 			    	       "          OR c.ctext LIKE  '%' ||:kw || '%' " +
-			    	       "          OR m2.membername LIKE  '%' ||:kw || '%' " +
+			    	       "          OR m2.membername LIKE  '%' ||:kw || '%' ) " +
+			    	       "		  AND n.category =:category " +
 			    	       "       ORDER BY n.createdate DESC " +
 			    	       "   ) n WHERE ROWNUM <= :endRow " +
 			    	       ") WHERE rnum > :startRow", 
 			    	       nativeQuery = true)
-		List<Notice> searchNoticesWithPaging(@Param("kw") String kw, @Param("startRow") int startRow, @Param("endRow") int endRow);
+		List<Notice> searchNoticesWithPaging(@Param("kw") String kw, @Param("startRow") int startRow, @Param("endRow") int endRow, @Param("category") String category);
 		
 		// 검색 결과 총 갯수 반환
 		@Query(value = 
@@ -63,13 +64,14 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 	    	       "       LEFT OUTER JOIN member m1 ON n.author_memberid = m1.memberid " +
 	    	       "       LEFT OUTER JOIN comments c ON c.notice_id = n.id " +
 	    	       "       LEFT OUTER JOIN member m2 ON c.author_memberid = m2.memberid " +
-	    	       "       WHERE n.btitle LIKE '%' ||:kw || '%' " +
+	    	       "       WHERE ( n.btitle LIKE '%' ||:kw || '%' " +
 	    	       "          OR n.bcontent LIKE  '%' ||:kw || '%'" +
 	    	       "          OR m1.memberid LIKE  '%' ||:kw || '%' " +
 	    	       "          OR c.ctext LIKE  '%' ||:kw || '%' " +
-	    	       "          OR m2.memberid LIKE  '%' ||:kw || '%' ",
+	    	       "          OR m2.memberid LIKE  '%' ||:kw || '%') " +
+	    	       "		AND n.category = :category",
 	    	       nativeQuery = true)
-		int countSearchResult(@Param("kw") String kw);
+		int countSearchResult(@Param("kw") String kw , @Param("category") String category);
 		
 		public Optional<Notice> findById(Integer id);
 }

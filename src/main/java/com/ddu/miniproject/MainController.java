@@ -10,7 +10,7 @@ public class MainController {
 	@GetMapping(value = "/") // 오라클 클라우드용 root 요청 처리
 	public String root() {
 		// url 기본 루트 url 설정 (-> 서버 start 시 리스트로 이동)
-		return "redirect:/index";
+		return "redirect:index";
 	}
 	@GetMapping(value = "/index") // 오라클 클라우드용 root 요청 처리
 	public String index() {

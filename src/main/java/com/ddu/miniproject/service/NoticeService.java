@@ -17,7 +17,6 @@ import com.ddu.miniproject.repository.MemberRepository;
 import com.ddu.miniproject.repository.NoticeRepository;
 import com.ddu.miniproject.security.DataNotFoundException;
 
-import groovyjarjarantlr4.v4.parse.ANTLRParser.element_return;
 
 @Service
 public class NoticeService {
@@ -44,22 +43,23 @@ public class NoticeService {
 			throw new DataNotFoundException("notice not found");
 		}
 	}
-	public void create(String btitle, String bcontent, Member member ) {
+	public void create(String btitle, String bcontent, Member member, String category ) {
 		Notice notice = new Notice();
 		notice.setBtitle(btitle);
 		notice.setBcontent(bcontent);
 		notice.setCreatedate(LocalDateTime.now());
+		notice.setCategory(category);
 		notice.setAuthor(member);
 		
 		noticeRepository.save(notice);
 	}
-	public Page<Notice> getPageList (int page, String kw){
+	public Page<Notice> getPageList (int page, String kw, String category){
 		int size = 10; // 1페이지당 글 10개씩 출력
 		int startRow = page *10; // * 페이징 의 첫번째 글 넘버 * 첫 페이지 page=0 -> 0*10 = 0 / 두번째 페이지 page =1 -> 1*10 = 10
 		int endRow = (startRow) + size; // * 페이징의 마지막 글 넘버 * 첫번째 페이지  0 +10 = 10 / 두번째 페이지 10 + 10 = 20
 		
-		List<Notice> searchNoticeList = noticeRepository.searchNoticesWithPaging(kw, startRow, endRow);
-		int totalSearchNotice = noticeRepository.countSearchResult(kw);
+		List<Notice> searchNoticeList = noticeRepository.searchNoticesWithPaging(kw, startRow, endRow, category);
+		int totalSearchNotice = noticeRepository.countSearchResult(kw, category);
 		
 		Page<Notice> pagingList = new PageImpl<>(searchNoticeList, PageRequest.of(page, size), totalSearchNotice);
 		

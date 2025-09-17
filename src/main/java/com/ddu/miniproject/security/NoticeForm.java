@@ -17,4 +17,6 @@ public class NoticeForm {
 	@Size(max = 500, message = "내용은 최대 500자 까지 가능합니다.") // 내용은 최대 500글자 까지 허용
 	@NotEmpty(message = "내용은 필수 항목입니다.")
 	private String bcontent;
+	
+	private String category;
 }

@@ -3,7 +3,13 @@
   <ul>
   	<li><a th:href="@{/}">홈으로</a></li>
     <li><a th:href="@{/reserve/reservation}">예약하기</a></li>
-    <li><a th:href="@{/notice/notice}">게시판</a></li>
+     <li class="dropdown">
+  <a href="javascript:void(0)" class="dropbtn">게시판</a>
+  <div class="dropdown-content">
+    <a th:href="@{/notice/notice/notice}">공지사항</a>
+    <a th:href="@{/notice/notice/board}">자유게시판</a>
+  </div>
+</li>
     <!-- 로그인 항목 -->
     <li th:classappend="${#authorization.expression('isAnonymous()') ? '' : 'hidden'}">
       <a th:href="@{/member/login}">로그인</a>
@@ -22,4 +28,24 @@
   	<li><a th:href="@{/map}" >오시는길</a></li>
   </ul>
 </nav>
+<script layout:fragment="script">
+document.addEventListener("DOMContentLoaded", function() {
+    const dropdown = document.querySelector(".dropdown");
+    const dropbtn = document.querySelector(".dropbtn");
+
+    // 클릭 시 토글
+    dropbtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      dropdown.classList.toggle("active");
+    });
+
+    // 바깥 클릭 시 닫힘
+    window.addEventListener("click", function(e) {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove("active");
+      }
+    });
+  });
+</script>
+
 </html>
