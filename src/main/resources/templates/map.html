@@ -7,12 +7,13 @@
     </div>
 
     <!-- 페이지 스크립트 -->
-    <script type="text/javascript" layout:fragment="script"
-            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=982f4155446da3a3024b8cfac00d35cc&libraries=services">
-    </script>
+    <div layout:fragment="script">
+    <!-- Kakao Maps SDK -->
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=982f4155446da3a3024b8cfac00d35cc&libraries=services"></script>
 
-    <script layout:fragment="script">
-        window.onload = function() {
+    <!-- 지도 초기화 스크립트 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
             var container = document.getElementById('map');
             var options = {
                 center: new kakao.maps.LatLng(37.556424302, 126.945206801),
@@ -43,6 +44,8 @@
                     alert("주소 검색 실패: " + status);
                 }
             });
-        };
+        });
     </script>
+</div>
+
 </html>
